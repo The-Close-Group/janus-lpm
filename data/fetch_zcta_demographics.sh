@@ -1,0 +1,51 @@
+#!/bin/bash
+
+# The Census API only allows 50 variables per request, so we're selecting the most important ones
+
+export CENSUS_API_KEY=""
+curl -v "https://api.census.gov/data/2023/acs/acs5?get=NAME,\
+B01003_001E,\
+B01002_001E,\
+B01001_003E,\
+B01001_027E,\
+B01001_002E,\
+B01001_026E,\
+B02001_002E,\
+B02001_001E,\
+B02001_003E,\
+B02001_005E,\
+B03003_003E,\
+B03003_001E,\
+B02001_004E,\
+B02001_006E,\
+B02001_007E,\
+B02001_008E,\
+B19013_001E,\
+B19001_002E,\
+B19001_006E,\
+B19001_010E,\
+B19001_014E,\
+B19001_017E,\
+B19001_001E,\
+B15003_017E,\
+B15003_025E,\
+B15003_001E,\
+B25010_001E,\
+B11003_002E,\
+B11003_001E,\
+B25003_002E,\
+B25003_001E,\
+B25077_001E,\
+B25064_001E,\
+B23025_003E,\
+B23025_001E,\
+B23025_005E,\
+B08303_001E,\
+B08301_010E,\
+B08301_001E,\
+B28002_004E,\
+B28002_007E,\
+B28002_001E&for=zip%20code%20tabulation%20area:*&key=$CENSUS_API_KEY" \
+  | tee response.json \
+  | jq -r '.[1:][]? | @csv' \
+  > zcta_demographics.csv
