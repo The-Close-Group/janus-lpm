@@ -1,0 +1,16 @@
+version: 1.0
+runtime: python3
+build:
+  commands:
+    build:
+      - python -m venv venv
+      - source venv/bin/activate
+      - pip install -r requirements.txt
+run:
+  runtime-version: 3.11
+  command: source venv/bin/activate && fastmcp run main.py:mcp --transport sse --host 0.0.0.0 --port 8000
+  network:
+    port: 8000
+  env:
+    - name: PYTHONUNBUFFERED
+      value: "1"
