@@ -25,7 +25,7 @@ fi
 
 # Start the server with Hypercorn
 echo "Starting the server with Hypercorn..."
-python main.py
+fastmcp run main.py:mcp --transport sse --host 0.0.0.0 
 
 # Use below for original FastMCP server without Hypercorn
 # python main.py
