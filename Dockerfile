@@ -1,25 +1,36 @@
-# Dockerfile for MarketingSimulator (auto-clone from GitHub)
+# Dockerfile for MarketingSimulator with AgentTorch integration
 
 # 1. Base image
 FROM python:3.10-slim
 
-# 2. Install Git (to clone the repo) and clean up
+# 2. Install system dependencies and clean up
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends git \
+    && apt-get install -y --no-install-recommends \
+    git \
+    build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-# 3. Clone the repository into /app
+# 3. Set working directory
 WORKDIR /app
-RUN git clone https://github.com/The-Close-Group/janus-lpm.git .
 
-# 4. Install Python dependencies
+# 4. Copy requirements first to leverage Docker caching
 COPY requirements.txt ./
+
+# 5. Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 5. Expose FastMCP port
+# 6. Copy the application code
+COPY . .
+
+# 7. Create directories for model checkpoints and data
+RUN mkdir -p /app/checkpoints /app/data
+
+# 8. Expose FastMCP port
 EXPOSE 8000
 
-# 6. Entrypoint: run the FastMCP server (SSE transport)
-CMD ["sh", "-c", \
-    "fastmcp run main.py:mcp --transport sse --host 0.0.0.0 --port ${PORT:-8000}"\
-]
+# 9. Set environment variables
+ENV PYTHONPATH=/app
+ENV PORT=8000
+
+# 10. Entrypoint: run the FastMCP server (SSE transport)
+CMD ["python", "main.py", "--host", "0.0.0.0", "--port", "8000"]
